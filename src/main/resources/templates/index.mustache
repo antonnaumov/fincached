@@ -1,0 +1,27 @@
+{{>header}}
+    <div class="panel panel-primary">
+        <div class="panel-heading">Simple Memechached UI, Flush button and some high level instance statistic</div>
+        <div class="panel-body">
+            <ul class="list-group">
+                {{#hosts}}
+                    <li class="list-group-item">
+                        <p><a role="button" data-toggle="collapse" href="#{{id}}" aria-expanded="false" aria-controls="{{id}}">{{name}}</a></p>
+                        <div class="collapse" id="{{id}}">
+                            Server details upcoming here
+                        </div>
+                        <script type="text/javascript">
+                            $('#{{id}}').on('show.bs.collapse', function() {
+                                $.get(
+                                    "/stat/{{name}}",
+                                    function(data) {
+                                        $("#{{id}}").html(data)
+                                    }
+                                );
+                            });
+                        </script>
+                    </li>
+                {{/hosts}}
+            </ul>
+        </div>
+    </div>
+{{>footer}}

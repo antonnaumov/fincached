@@ -1,0 +1,140 @@
+<div class="row">
+    <div class="col-md-6">
+        <ul class="list-group">
+            <li class="list-group-item">
+                <label for="status-{{id}}">Status</label>
+                <span id="status-{{id}}" class="glyphicon glyphicon-eye-{{status}}" aria-hidden="true"></span>
+            </li>
+            <li class="list-group-item">
+                <label for="endpoint-{{id}}">Endpoint</label>
+                <span id="endpoint-{{id}}">{{host}}</span>
+            </li>
+            <li class="list-group-item">
+                <label for="version-{{id}}">Version</label>
+                <span id="version-{{id}}">{{version}}</span>
+            </li>
+            <li class="list-group-item">
+                <label for="memory-used-{{id}}">Memory used</label>
+                <span id="memory-used-{{id}}">{{#memoryUsage}}{{mbUsed}} MB{{/memoryUsage}}</span>
+            </li>
+            <li class="list-group-item">
+                <label for="memory-used-{{id}}">Memory total</label>
+                <span id="memory-used-{{id}}">{{#memoryUsage}}{{mbTotal}} MB{{/memoryUsage}}</span>
+            </li>
+            <li class="list-group-item">
+                <label for="uptime-{{id}}">Uptime</label>
+                <span id="uptime-{{id}}">{{uptime}}</span>
+            </li>
+            <li class="list-group-item">
+                <label for="active-connections-{{id}}">Active connections</label>
+                <span id="active-connections-{{id}}">{{connections}}</span>
+            </li>
+        </ul>
+        <ul class="list-unstyled">
+            {{#stat}}
+                <li>
+                    <label for="stat-{{key}}">{{key}}</label>
+                    <span id="stat-{{key}}">{{value}}</span>
+                </li>
+            {{/stat}}
+        </ul>
+    </div>
+    <div class="col-md-6">
+        <ul class="list-group">
+            <li class="list-group-item">
+                {{#memoryUsage}}
+                    <span>Memory status</span>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-success progress-bar-striped" style="width: {{green}}%">
+                            <span class="sr-only">Up to 60% Used (normal)</span>
+                        </div>
+                        {{#yellow}}
+                            <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: {{yellow}}%">
+                                <span class="sr-only">Up to 85% Used (warning)</span>
+                            </div>
+                        {{/yellow}}
+                        {{#red}}
+                            <div class="progress-bar progress-bar-danger progress-bar-striped" style="width: {{red}}%">
+                                <span class="sr-only">More than 85% Used (danger)</span>
+                            </div>
+                        {{/red}}
+                    </div>
+                {{/memoryUsage}}
+            </li>
+            <li class="list-group-item">
+                <div id="chart-cointainer-{{id}}">
+                    {{#hitCount}}
+                        <div id="throughput-graph-{{id}}" style="min-width: 200px; height: 250px; margin: 0 auto"></div>
+                        <script type="text/javascript">
+                            var throughputChart = new Highcharts.Chart({
+                                chart: {
+                                    renderTo: 'throughput-graph-{{id}}',
+                                    type: 'line'
+                                },
+                                title: {
+                                    text: 'Throughput'
+                                },
+                                xAxis: {
+                                  categories: [timeAsChartCategory()]
+                                },
+                                yAxis: {
+                                  min: 0
+                                },
+                                series: [
+                                    {
+                                        name: "read",
+                                        data: [{{get}}]
+                                    },
+                                    {
+                                        name: "write",
+                                        data: [{{set}}]
+                                    },
+                                    {
+                                        name: "others",
+                                        data: [{{others}}]
+                                    }
+                                ]
+                            });
+
+                            setInterval(function() {
+                                $.get(
+                                        "/stat/hits/{{host}}",
+                                        function(data) {
+                                            var timestamp = timeAsChartCategory();
+                                            throughputChart.series[0].addPoint([timestamp, data.get]);
+                                            throughputChart.series[1].addPoint([timestamp, data.set]);
+                                            throughputChart.series[2].addPoint([timestamp, data.others]);
+                                        }
+                                )
+                            }, 1000);
+                        </script>
+                    {{/hitCount}}
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="btn-group" role="group">
+    <button type="button" class="btn btn-danger" id="{{id}}-flush">Flush</button>
+    <button type="button" class="btn btn-success" id="{{id}}-refresh">Refresh</button>
+    <script type="text/javascript">
+        $('#{{id}}-flush').on('click', function(e) {
+            $(this).prop('disabled', true);
+            $.post(
+                    '/flush{{host}}',
+                    {},
+                    function() {
+                        $('#{{host}}-flush').prop('disabled', false);
+                    }
+            );
+        });
+        $('#{{id}}-refresh').on('click', function(e) {
+            $.get(
+                    "/stat/{{host}}",
+                    function(data) {
+                        $("#{{id}}").html(data)
+                    }
+            );
+        });
+    </script>
+</div>

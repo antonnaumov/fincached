@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<html lang="en">
+    <head>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+        <!-- Chart library -->
+        <script src="http://code.highcharts.com/highcharts.js"></script>
+        <script src="http://code.highcharts.com/modules/exporting.js"></script>
+
+        <script type="text/javascript">
+            function renderChart(id, data, title, type) {
+                $('#' + id).highcharts({
+                    chart: {
+                        type: type
+                    },
+                    title: {
+                        text: title
+                    },
+                    xAxis: {
+                        categories: data.categories
+                    },
+                    yAxis: {
+                        min: 0
+                    },
+                    plotOptions: {
+                        series: {
+                            animation: false
+                        }
+                    },
+                    series: [
+                        {
+                            name: "read",
+                            data: data.read
+                        },
+                        {
+                            name: "write",
+                            data: data.write
+                        },
+                        {
+                            name: "delete",
+                            data: data.delete
+                        }
+                    ]
+                });
+            }
+
+            function timeAsChartCategory() {
+                var d = new Date();
+                var h = d.getHours();
+                var m = d.getMinutes();
+                var s = d.getSeconds();
+                return h + ':' + m + ':' + s;
+            }
+        </script>
+    </head>
+<body>
+<div class="container">
