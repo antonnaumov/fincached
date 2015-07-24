@@ -41,7 +41,7 @@ object Launcher extends HttpServer {
 
     post("/flush/:host?") { request: Request =>
       loanClient(request) { implicit client =>
-        response.ok.plain(flush().get(30, TimeUnit.SECONDS))
+        response.ok.json(Map("result" -> flush().get(30, TimeUnit.SECONDS)))
       }
     }
 

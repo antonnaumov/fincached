@@ -26,6 +26,10 @@
                 <span id="uptime-{{id}}">{{uptime}}</span>
             </li>
             <li class="list-group-item">
+                <label for="uptime-{{id}}">Items total</label>
+                <span id="uptime-{{id}}">{{itemsTotal}}</span>
+            </li>
+            <li class="list-group-item">
                 <label for="active-connections-{{id}}">Active connections</label>
                 <span id="active-connections-{{id}}">{{connections}}</span>
             </li>
@@ -115,26 +119,46 @@
     </div>
 </div>
 <div class="btn-group" role="group">
-    <button type="button" class="btn btn-danger" id="{{id}}-flush">Flush</button>
-    <button type="button" class="btn btn-success" id="{{id}}-refresh">Refresh</button>
+    <button type="button" class="btn btn-success" id="{{id}}-refresh" data-loading-text="Refreshing..." autocomplete="off">Refresh</button>
+    <button type="button" class="btn btn-danger" id="{{id}}-flush" data-loading-text="Flushing..." autocomplete="off">Flush</button>
     <script type="text/javascript">
+        function showAlert(message, alertType) {
+
+            $('#alert-placeholder').append('<div id="alertdiv" class="alert ' +  alertType + '"><a class="close" data-dismiss="alert">×</a><span>'+message+'</span></div>');
+
+            setTimeout(function() {
+                $("#alertdiv").remove();
+            }, 5000);
+        }
+
         $('#{{id}}-flush').on('click', function(e) {
-            $(this).prop('disabled', true);
+            var btn = $(this).button('loading');
+            var result = true;
             $.post(
                     '/flush{{host}}',
                     {},
-                    function() {
-                        $('#{{host}}-flush').prop('disabled', false);
+                    function(data) {
+                        result = data.result;
                     }
             );
+            if (result) {
+                showAlert('{{host}} cache flush successfully', 'alert-success');
+            } else {
+                showAlert('{{host}} cache flush failed', 'alert-danger');
+            }
+            btn.button('reset');
         });
         $('#{{id}}-refresh').on('click', function(e) {
+            var btn = $(this).button('loading');
             $.get(
                     "/stat/{{host}}",
                     function(data) {
-                        $("#{{id}}").html(data)
+                        $('#{{host}}-refresh').prop('disabled', false);
+                        $("#{{id}}").html(data);
                     }
             );
+            btn.button('reset');
+            showAlert('{{host}} refresh successfully', 'alert-success');
         });
     </script>
 </div>
