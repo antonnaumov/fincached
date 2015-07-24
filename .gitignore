@@ -79,4 +79,6 @@ project/plugins/project/
 .scala_dependencies
 .worksheet
 
+### Other ingore files
+fincached.conf
 

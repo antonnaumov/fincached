@@ -8,7 +8,7 @@ RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | te
 	&& apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886 \
     && apt-get -y update \
     && echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections \
-    && echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections
+    && echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections \
     && apt-get -y install software-properties-common oracle-java7-installer oracle-java7-set-default
 
 WORKDIR /srv

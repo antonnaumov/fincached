@@ -18,7 +18,6 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.typesafe"                  %  "config"                         % "1.2.1",
   "spy"                           %  "spymemcached"                   % "2.8.9",
   "com.twitter.finatra"           %%  "finatra-http"                  % "2.0.0.M2",
   "com.twitter.finatra"           %%  "finatra-logback"               % "2.0.0.M2"
